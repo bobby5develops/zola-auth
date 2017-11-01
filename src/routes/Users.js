@@ -21,6 +21,8 @@ import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import ActionFavorite from 'material-ui/svg-icons/action/favorite';
 import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
 
+import {Link} from 'react-router-dom';
+
 const styles = {
 	root: {
 		display: 'flex',
@@ -39,7 +41,10 @@ const styles = {
 
 	},
 	titleStyle: {
-		color: 'rgb(0, 188, 212)',
+		color: '#01b4c0',
+	},
+	children: {
+		color: '#FFF',
 	},
 	subheader: {
 		color: '#01b4c0',
@@ -69,12 +74,7 @@ class Users extends React.Component{
 		}
 	}
 
-	handleChange = (event, index, value) => this.setState({value});
-	handleChangeSingle = (event, value) => {
-		this.setState({
-			valueSingle: value,
-		});
-	};
+
 
 
 	componentWillMount(){
@@ -96,7 +96,10 @@ class Users extends React.Component{
 
 	}
 
-
+	handleChange = (event, index, value) => {
+		this.setState({value});
+		console.log(value);
+	};
 
 	render(){
 		return (
@@ -111,18 +114,19 @@ class Users extends React.Component{
 							</DropDownMenu>
 						</ToolbarGroup>
 						<ToolbarGroup>
-							<RadioButtonGroup  labelPosition="left" style={styles.block}>
+							<RadioButtonGroup  name="notRight" labelPosition="left" style={styles.block}>
 								<RadioButton
 									value="opt1"
 									label="opt1"
 									checkedIcon={<ActionFavorite style={{color: '#01b4c0'}} />}
 									uncheckedIcon={<ActionFavoriteBorder />}
 									style={styles.radioButton}
+									onChange={this.handleChange}
 								/>
 							</RadioButtonGroup>
 						</ToolbarGroup>
 						<ToolbarGroup>
-							<RadioButtonGroup>
+							<RadioButtonGroup name="notRight">
 								<RadioButton
 									value="opt2"
 									label="opt2"
@@ -133,7 +137,7 @@ class Users extends React.Component{
 							</RadioButtonGroup>
 						</ToolbarGroup>
 						<ToolbarGroup>
-							<RadioButtonGroup>
+							<RadioButtonGroup name="notRight">
 								<RadioButton
 									value="opt3"
 									label="opt3"
@@ -144,20 +148,17 @@ class Users extends React.Component{
 						</ToolbarGroup>
 					</Toolbar>
 				</div>
+
 				<GridList cellHeight="auto" style={styles.gridList} cols={3.0}>
 					{this.state.users.map((user, i) => (
 						<GridTile
 							key={i}
 							title={user.name}
-							subtitle={<span>Age: {user.age}</span>}
-							category={<span>Category: {user.category}</span>}
-							actionIcon={<IconButton><StarBorder color="white" /></IconButton>}
 							titleStyle={styles.titleStyle}
-
-
-
-						>
-
+							subtitle={<span>Age: {user.age}</span>}
+							children={<span style={styles.children}>Cat: {user.category}</span>}
+							child={user.priority}
+							actionIcon={<IconButton><ActionFavoriteBorder color="white"/></IconButton>}>
 
 						</GridTile>
 					))}
