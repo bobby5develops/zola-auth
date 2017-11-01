@@ -108,7 +108,7 @@ class Login extends React.Component{
 
 	render(){
 		return (
-			<div className="login_background">
+			<div className="login_container">
 				<h1 className="success-msg">Success</h1>
 				<h1 className="email_errorMsg">Denied</h1>
 				<h1 className="password_errorMsg">Denied</h1>
