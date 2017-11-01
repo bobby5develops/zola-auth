@@ -3,3 +3,6 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 ##Zola-Auth
 
 #A simple web application, built in React and Material-UI.
+
+#npm start ( serve app on localhost:3000 )
+
