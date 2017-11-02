@@ -1,27 +1,14 @@
 import React from 'react';
 import preload from '../data/data.json';
 import {GridList, GridTile} from 'material-ui/GridList';
-import { withStyles } from 'material-ui/styles';
 import IconButton from 'material-ui/IconButton';
-import Subheader from 'material-ui/Subheader';
-import StarBorder from 'material-ui/svg-icons/toggle/star-border';
-import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-
-import NavigationExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import DropDownMenu from 'material-ui/DropDownMenu';
-import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
-
-import RaisedButton from 'material-ui/RaisedButton';
-import ContentFilter from 'material-ui/svg-icons/content/filter-list';
-import FileFileDownload from 'material-ui/svg-icons/file/file-download';
-
+import {Toolbar, ToolbarGroup, ToolbarSeparator} from 'material-ui/Toolbar';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import ActionFavorite from 'material-ui/svg-icons/action/favorite';
 import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
 
-import {Link} from 'react-router-dom';
 
 const styles = {
 	root: {
@@ -33,15 +20,22 @@ const styles = {
 		cols: 3,
 		width: 700,
 		height: 550,
-		overflowY: 'auto',
+		marginTop: 100,
+		overflow: 'hidden'
 
 
 	},
+
 	gridTile: {
+		border: '2px solid #000'
 
 	},
 	titleStyle: {
 		color: '#01b4c0',
+		fontWeight: 'bold'
+	},
+	subtitleStyle: {
+		fontSize: 12
 	},
 	children: {
 		color: '#FFF',
@@ -58,6 +52,9 @@ const styles = {
 	radioButton: {
 		marginBottom: 16,
 	},
+	menuStyle: {
+		selectedTextColor: '#01b4c0'
+	}
 };
 
 
@@ -65,41 +62,123 @@ const styles = {
 class Users extends React.Component{
 	constructor(props){
 		super(props);
+		this.handleChange = this.handleChange.bind(this);
+		this.sortList = this.sortList.bind(this);
+		this.filterList = this.filterList.bind(this);
 		this.state = {
 			users: [],
 			categories: [],
-			valueSingle: "3",
-			valueMultiple: ['3', '5'],
-			value: 3
+			value: 1,
+			bgColor: ''
 		}
 	}
 
 
+	componentWillMount = () => {
+		let session = sessionStorage.getItem('password');
 
+		if (session !== 'zola#frontend' || undefined){
+			alert('Redirecting user to login page');
+			window.location.pathname = '/';
+		}
 
-	componentWillMount(){
 		let users = preload.data;
-		console.log(users);
 		this.setState({
 			users: users
 		});
+
 		let categories = [];
-		console.log(categories);
 		users.map((user) => {
-			console.log(user.category);
 			if (categories.indexOf(user.category) === -1) {
 				categories.push(user.category)
 			}
 			return null
 		});
-		this.setState({categories: categories})
 
-	}
+		this.setState({categories: categories});
+
+	};
+
 
 	handleChange = (event, index, value) => {
-		this.setState({value});
-		console.log(value);
+		this.sortList(value);
+		let users = this.state.users;
+		this.setState({users: users});
 	};
+
+	sortList = (value)=> {
+		this.setState({value});
+		let users = this.state.users;
+
+		if (value === 1){
+			window.location.pathname = '/users';
+		}
+
+		if (value === 2){
+			users.sort(function (a,z) {
+				let firstLetter = a.name;
+				let lastLetter = z.name;
+
+				if (firstLetter < lastLetter){
+					return -1;
+				}
+				if (firstLetter > lastLetter){
+					return 1;
+				}
+				return 0;
+			})
+		}else if (value === 3){
+			users.sort(function (a,z) {
+				let firstLetter = a.name;
+				let lastLetter = z.name;
+
+				if (firstLetter > lastLetter){
+					return -1;
+				}
+				if (firstLetter < lastLetter){
+					return 1;
+				}
+				return 0;
+			})
+		}else if (value === 4){
+			users.sort(function (first, last) {
+				let firstNum = first.priority;
+				let lastNum = last.priority;
+
+				if (firstNum < lastNum){
+					return -1;
+				}
+				if (firstNum > lastNum){
+					return 1;
+				}
+				return 0;
+			}).map(function (x) {
+				let iterator = x.priority;
+
+				if (iterator === 1){
+
+					//styles.gridTile.backgroundColor = "orange";
+				}else if (iterator === 2){
+
+				}else if (iterator === 3){
+
+				}else if (iterator === 4){
+
+				}
+				return iterator;
+			});
+		}
+		return value;
+	};
+	filterList = (value) => {
+		this.setState({value});
+	};
+
+
+
+
+	//create a show function
+	//create a hide function
 
 	render(){
 		return (
@@ -107,43 +186,27 @@ class Users extends React.Component{
 				<div>
 					<Toolbar>
 						<ToolbarGroup firstChild={true}>
+							{/*sort grid alphanumerically A-Z / Z-A */}
 							<DropDownMenu value={this.state.value} onChange={this.handleChange}>
-								<MenuItem value={1} primaryText="All Users" />
+								<MenuItem value={1} primaryText="Featured" />
 								<MenuItem value={2} primaryText="A-Z" />
 								<MenuItem value={3} primaryText="Z-A" />
+								<MenuItem value={4} primaryText="Priority" />
 							</DropDownMenu>
 						</ToolbarGroup>
+						<ToolbarSeparator />
 						<ToolbarGroup>
-							<RadioButtonGroup  name="notRight" labelPosition="left" style={styles.block}>
-								<RadioButton
-									value="opt1"
-									label="opt1"
-									checkedIcon={<ActionFavorite style={{color: '#01b4c0'}} />}
-									uncheckedIcon={<ActionFavoriteBorder />}
-									style={styles.radioButton}
-									onChange={this.handleChange}
-								/>
-							</RadioButtonGroup>
-						</ToolbarGroup>
-						<ToolbarGroup>
-							<RadioButtonGroup name="notRight">
-								<RadioButton
-									value="opt2"
-									label="opt2"
-									checkedIcon={<ActionFavorite style={{color: '#01b4c0'}} />}
-									uncheckedIcon={<ActionFavoriteBorder />}
-									style={styles.radioButton}
-								/>
-							</RadioButtonGroup>
-						</ToolbarGroup>
-						<ToolbarGroup>
-							<RadioButtonGroup name="notRight">
-								<RadioButton
-									value="opt3"
-									label="opt3"
-									checkedIcon={<ActionFavorite style={{color: '#01b4c0'}} />}
-									uncheckedIcon={<ActionFavoriteBorder />}
-									style={styles.radioButton}/>
+							{/*filter grid based on categories*/}
+							<RadioButtonGroup value={this.state.value} onChange={this.filterList} labelPosition="left" defaultSelected={"opt1"}>
+								{this.state.categories.map((cat, i)=>{
+									return (<RadioButton
+										value={cat}
+										label={i}
+										checkedIcon={<ActionFavorite style={{color: '#01b4c0'}} />}
+										uncheckedIcon={<ActionFavoriteBorder />}
+										style={styles.radioButton}
+									/>)
+								})}
 							</RadioButtonGroup>
 						</ToolbarGroup>
 					</Toolbar>
@@ -151,15 +214,16 @@ class Users extends React.Component{
 
 				<GridList cellHeight="auto" style={styles.gridList} cols={3.0}>
 					{this.state.users.map((user, i) => (
-						<GridTile
+						<GridTile style={styles.gridTile} className="grid_tile"
 							key={i}
 							title={user.name}
 							titleStyle={styles.titleStyle}
 							subtitle={<span>Age: {user.age}</span>}
-							children={<span style={styles.children}>Cat: {user.category}</span>}
+							subtitleStyle={styles.subtitleStyle}
+							children={<span style={styles.children}>Cat: {(user.category)}</span>}
 							child={user.priority}
 							actionIcon={<IconButton><ActionFavoriteBorder color="white"/></IconButton>}>
-
+								<span className="background"></span>
 						</GridTile>
 					))}
 				</GridList>
