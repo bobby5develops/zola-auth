@@ -11,23 +11,19 @@ import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
 
 
 const styles = {
-	root: {
-		display: 'flex',
-		flexWrap: 'wrap',
-		justifyContent: 'space-around',
-	},
 	gridList: {
-		cols: 3,
-		width: 700,
-		height: 550,
+		width: 100,
+		height: 'auto',
 		marginTop: 100,
-		overflow: 'hidden'
+		overflow: 'hidden',
+		cols: 3
 
 
 	},
 
 	gridTile: {
 		border: '2px solid #000'
+
 
 	},
 	titleStyle: {
@@ -74,7 +70,7 @@ class Users extends React.Component{
 	}
 
 
-	componentWillMount = () => {
+	componentWillMount = (props) => {
 		let session = sessionStorage.getItem('password');
 
 		if (session !== 'zola#frontend' || undefined){
@@ -83,8 +79,9 @@ class Users extends React.Component{
 		}
 
 		let users = preload.data;
-		this.setState({
-			users: users
+
+		this.setState((prevState, props) => {
+			return { users: users }
 		});
 
 		let categories = [];
@@ -97,16 +94,33 @@ class Users extends React.Component{
 
 		this.setState({categories: categories});
 
+
 	};
 
 
 	handleChange = (event, index, value) => {
+		{/*if (event.target.value){
+			this.sortList(value);
+		}else if (){
+			this.filterList(value);
+		}*/}
+		let filter = event.target;
+		let filterValue = event.target.value;
+
+
 		this.sortList(value);
-		let users = this.state.users;
-		this.setState({users: users});
+		this.filterList(value);
+		console.log(event.target);
+		console.log(value);
 	};
 
-	sortList = (value)=> {
+	filterList = (value) => {
+		this.setState({value});
+		console.log(value);
+		return value;
+	};
+
+	sortList = (value) => {
 		this.setState({value});
 		let users = this.state.users;
 
@@ -170,10 +184,6 @@ class Users extends React.Component{
 		}
 		return value;
 	};
-	filterList = (value) => {
-		this.setState({value});
-	};
-
 
 
 
@@ -182,8 +192,8 @@ class Users extends React.Component{
 
 	render(){
 		return (
-			<div style={styles.root}>
-				<div>
+			<div className="span_12_of_12">
+				<div className="nav">
 					<Toolbar>
 						<ToolbarGroup firstChild={true}>
 							{/*sort grid alphanumerically A-Z / Z-A */}
@@ -195,13 +205,14 @@ class Users extends React.Component{
 							</DropDownMenu>
 						</ToolbarGroup>
 						<ToolbarSeparator />
-						<ToolbarGroup>
+						<ToolbarGroup lastChild={true}>
 							{/*filter grid based on categories*/}
-							<RadioButtonGroup value={this.state.value} onChange={this.filterList} labelPosition="left" defaultSelected={"opt1"}>
-								{this.state.categories.map((cat, i)=>{
+							<RadioButtonGroup name="filter" value={this.state.value} onChange={this.handleChange} labelPosition="left" defaultSelected={"opt1"}>
+								{this.state.categories.map((cat, index, array)=>{
 									return (<RadioButton
-										value={cat}
-										label={i}
+										key={index}
+										value={console.log({cat})}
+										label={index}
 										checkedIcon={<ActionFavorite style={{color: '#01b4c0'}} />}
 										uncheckedIcon={<ActionFavoriteBorder />}
 										style={styles.radioButton}
@@ -212,15 +223,15 @@ class Users extends React.Component{
 					</Toolbar>
 				</div>
 
-				<GridList cellHeight="auto" style={styles.gridList} cols={3.0}>
-					{this.state.users.map((user, i) => (
-						<GridTile style={styles.gridTile} className="grid_tile"
-							key={i}
+				<GridList className="gridList row group" cols={3}>
+					{this.state.users.map((user, index, array) => (
+						<GridTile  className="gridTile" style={styles.gridTile.width = '100%'}
+							key={index}
 							title={user.name}
 							titleStyle={styles.titleStyle}
 							subtitle={<span>Age: {user.age}</span>}
 							subtitleStyle={styles.subtitleStyle}
-							children={<span style={styles.children}>Cat: {(user.category)}</span>}
+							children={user.categories}
 							child={user.priority}
 							actionIcon={<IconButton><ActionFavoriteBorder color="white"/></IconButton>}>
 								<span className="background"></span>
